@@ -1033,34 +1033,6 @@ export default function App() {
                 );
               })()}
 
-              <div className="print-section-title">규격별 최종 집계</div>
-              <table className="print-table">
-                <thead><tr><th>규격 (외경)</th><th>총 소요 본수</th><th>두께별 재단 수량</th><th>합계 재단 수량</th></tr></thead>
-                <tbody>
-                  {(() => {
-                    const pm: Record<string, number> = {};
-                    for (const r of results) pm[r.spec] = (pm[r.spec] ?? 0) + r.totalPipes;
-                    const cm: Record<string, { thickness: string; qty: number }[]> = {};
-                    for (const item of items) {
-                      if (!cm[item.spec]) cm[item.spec] = [];
-                      const ex = cm[item.spec].find(e => e.thickness === item.thickness);
-                      if (ex) ex.qty += item.qty;
-                      else cm[item.spec].push({ thickness: item.thickness, qty: item.qty });
-                    }
-                    return Object.keys(pm).map((spec, i) => {
-                      const rows = cm[spec] ?? [];
-                      return (
-                        <tr key={i}>
-                          <td style={{ fontWeight: 700 }}>{formatSpec(spec)}</td>
-                          <td style={{ fontWeight: 700 }}>{pm[spec]}본</td>
-                          <td style={{ textAlign: 'left' }}>{rows.map(r => `${r.thickness} ${r.qty}번`).join(' / ')}</td>
-                          <td style={{ fontWeight: 700 }}>{rows.reduce((a, r) => a + r.qty, 0)}번</td>
-                        </tr>
-                      );
-                    });
-                  })()}
-                </tbody>
-              </table>
             </div>
 
             <div id="print-detail">
