@@ -653,7 +653,7 @@ export default function App() {
             />
             <p className="text-xs text-gray-600 text-right -mt-1">
               줄바꿈 <kbd className="bg-gray-700 border border-gray-600 text-gray-400 rounded px-1 py-0.5 font-sans">Shift</kbd> + <kbd className="bg-gray-700 border border-gray-600 text-gray-400 rounded px-1 py-0.5 font-sans">Enter</kbd>
-              &nbsp;&nbsp;계산 <kbd className="bg-gray-700 border border-gray-600 text-gray-400 rounded px-1 py-0.5 font-sans">Enter</kbd>
+              &nbsp;&nbsp;계산(추가) <kbd className="bg-gray-700 border border-gray-600 text-gray-400 rounded px-1 py-0.5 font-sans">Enter</kbd>
             </p>
             {bulkErrors.length > 0 && (
               <div className="bg-red-900/20 border border-red-800/40 rounded-xl px-4 py-3 space-y-2">
