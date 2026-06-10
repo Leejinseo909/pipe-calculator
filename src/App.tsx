@@ -1087,7 +1087,7 @@ export default function App() {
                         return (
                           <tr key={bi}>
                             <td>#{bi + 1}</td>
-                            <td style={{ textAlign: 'left' }}>{bin.map(s => `${s.toLocaleString()}mm`).join(' + ')}</td>
+                            <td style={{ textAlign: 'left', fontSize: '14px', fontWeight: 600 }}>{bin.map(s => `${s.toLocaleString()}mm`).join(' + ')}</td>
                             <td>{((used / PIPE_LENGTH) * 100).toFixed(1)}%</td>
                             <td>{waste.toLocaleString()}</td>
                           </tr>
