@@ -381,7 +381,6 @@ export default function App() {
 
   const handleDelete = useCallback((id: string) => {
     setItems(p => p.filter(i => i.id !== id));
-    setResults(null);
   }, []);
 
   const commitBulkRows = useCallback((rows: ParsedRow[]) => {
@@ -431,7 +430,9 @@ export default function App() {
 
   // effects
   useEffect(() => {
-    if (liveRecalc && items.length > 0) setResults(calculateResults(items, kerf));
+    if (!liveRecalc) return;
+    if (items.length === 0) { setResults(null); return; }
+    setResults(calculateResults(items, kerf));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items, kerf]);
 
