@@ -985,6 +985,7 @@ export default function App() {
                 출력일시: <span id="print-date"></span>
                 &nbsp;·&nbsp; 원본 파이프 기준: 6,000mm
                 &nbsp;·&nbsp; 출력 형식: {printMode === 'summary' ? '요약 결과형' : '배치 상세형'}
+                &nbsp;·&nbsp; 컷당 손실량: {kerf}mm
               </p>
             </div>
 
