@@ -1002,21 +1002,36 @@ export default function App() {
               </table>
 
               <div className="print-section-title">최종 소요 본수 요약</div>
-              <table className="print-table">
-                <thead><tr><th>규격</th><th>두께</th><th>필요 원본 (본)</th><th>자투리 합계 (mm)</th></tr></thead>
-                <tbody>
-                  {results.map((r, i) => (
-                    <tr key={i}><td>{r.spec}</td><td>{r.thickness}</td><td>{r.totalPipes}본</td><td>{r.totalWaste.toLocaleString()}</td></tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <td colSpan={2}>합 계</td>
-                    <td>{results.reduce((a, r) => a + r.totalPipes, 0)}본</td>
-                    <td>{results.reduce((a, r) => a + r.totalWaste, 0).toLocaleString()}</td>
-                  </tr>
-                </tfoot>
-              </table>
+              {(() => {
+                const cutQty: Record<string, number> = {};
+                for (const item of items) {
+                  const k = `${item.spec}-${item.thickness}`;
+                  cutQty[k] = (cutQty[k] ?? 0) + item.qty;
+                }
+                return (
+                  <table className="print-table">
+                    <thead><tr><th>규격</th><th>두께</th><th>필요 원본 (본)</th><th>자투리 합계 (mm)</th><th>재단수량 합계</th></tr></thead>
+                    <tbody>
+                      {results.map((r, i) => (
+                        <tr key={i}>
+                          <td>{r.spec}</td><td>{r.thickness}</td>
+                          <td>{r.totalPipes}본</td>
+                          <td>{r.totalWaste.toLocaleString()}</td>
+                          <td>{(cutQty[`${r.spec}-${r.thickness}`] ?? 0).toLocaleString()}개</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td colSpan={2}>합 계</td>
+                        <td>{results.reduce((a, r) => a + r.totalPipes, 0)}본</td>
+                        <td>{results.reduce((a, r) => a + r.totalWaste, 0).toLocaleString()}</td>
+                        <td>{items.reduce((a, it) => a + it.qty, 0).toLocaleString()}개</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                );
+              })()}
 
               <div className="print-section-title">규격별 최종 집계</div>
               <table className="print-table">
@@ -1060,21 +1075,36 @@ export default function App() {
               </table>
 
               <div className="print-section-title">최종 소요 본수 요약</div>
-              <table className="print-table">
-                <thead><tr><th>규격</th><th>두께</th><th>필요 원본 (본)</th><th>자투리 합계 (mm)</th></tr></thead>
-                <tbody>
-                  {results.map((r, i) => (
-                    <tr key={i}><td>{r.spec}</td><td>{r.thickness}</td><td>{r.totalPipes}본</td><td>{r.totalWaste.toLocaleString()}</td></tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <td colSpan={2}>합 계</td>
-                    <td>{results.reduce((a, r) => a + r.totalPipes, 0)}본</td>
-                    <td>{results.reduce((a, r) => a + r.totalWaste, 0).toLocaleString()}</td>
-                  </tr>
-                </tfoot>
-              </table>
+              {(() => {
+                const cutQty: Record<string, number> = {};
+                for (const item of items) {
+                  const k = `${item.spec}-${item.thickness}`;
+                  cutQty[k] = (cutQty[k] ?? 0) + item.qty;
+                }
+                return (
+                  <table className="print-table">
+                    <thead><tr><th>규격</th><th>두께</th><th>필요 원본 (본)</th><th>자투리 합계 (mm)</th><th>재단수량 합계</th></tr></thead>
+                    <tbody>
+                      {results.map((r, i) => (
+                        <tr key={i}>
+                          <td>{r.spec}</td><td>{r.thickness}</td>
+                          <td>{r.totalPipes}본</td>
+                          <td>{r.totalWaste.toLocaleString()}</td>
+                          <td>{(cutQty[`${r.spec}-${r.thickness}`] ?? 0).toLocaleString()}개</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td colSpan={2}>합 계</td>
+                        <td>{results.reduce((a, r) => a + r.totalPipes, 0)}본</td>
+                        <td>{results.reduce((a, r) => a + r.totalWaste, 0).toLocaleString()}</td>
+                        <td>{items.reduce((a, it) => a + it.qty, 0).toLocaleString()}개</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                );
+              })()}
 
               <div className="print-section-title">원본 배치 상세</div>
               {results.map((r, ri) => (
