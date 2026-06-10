@@ -1081,7 +1081,14 @@ export default function App() {
                 <div key={ri} className="print-detail-block">
                   <p className="print-detail-group-title">[{r.spec} · {r.thickness}] 총 {r.totalPipes}본</p>
                   <table className="print-detail-table">
-                    <thead><tr><th>원본 번호</th><th>재단 구성 (mm)</th><th>사용률</th><th>자투리 (mm)</th></tr></thead>
+                    <thead>
+                      <tr>
+                        <th style={{ width: '9%' }}>원본 번호</th>
+                        <th>재단 구성 (mm)</th>
+                        <th style={{ width: '11%' }}>사용률</th>
+                        <th style={{ width: '14%' }}>자투리 (mm)</th>
+                      </tr>
+                    </thead>
                     <tbody>
                       {r.bins.map((bin, bi) => {
                         const used = bin.reduce((a, b) => a + b, 0);
@@ -1089,7 +1096,7 @@ export default function App() {
                         return (
                           <tr key={bi}>
                             <td>#{bi + 1}</td>
-                            <td style={{ textAlign: 'left', fontSize: '14px', fontWeight: 600 }}>{bin.map(s => s.toLocaleString()).join(' + ')}</td>
+                            <td className="cut-composition" style={{ fontSize: '14px', fontWeight: 600 }}>{bin.map(s => s.toLocaleString()).join(' + ')}</td>
                             <td>{((used / PIPE_LENGTH) * 100).toFixed(1)}%</td>
                             <td>{waste.toLocaleString()}</td>
                           </tr>

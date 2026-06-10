@@ -38,11 +38,13 @@
 
   .print-detail-block { margin-bottom: 20px; break-inside: avoid; page-break-inside: avoid; }
   .print-detail-group-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
-  .print-detail-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .print-detail-table { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: fixed; }
   .print-detail-table th, .print-detail-table td {
     border: 1px solid #ddd; padding: 5px 8px; text-align: center;
+    overflow: hidden;
   }
   .print-detail-table th { background: #f5f5f5; font-weight: 600; }
+  .print-detail-table td.cut-composition { text-align: left; overflow-wrap: break-word; word-break: break-all; }
 
   .print-footer {
     margin-top: 28px; padding-top: 10px;
