@@ -1057,6 +1057,23 @@ export default function App() {
                 </tbody>
               </table>
 
+              <div className="print-section-title">최종 소요 본수 요약</div>
+              <table className="print-table">
+                <thead><tr><th>규격</th><th>두께</th><th>필요 원본 (본)</th><th>자투리 합계 (mm)</th></tr></thead>
+                <tbody>
+                  {results.map((r, i) => (
+                    <tr key={i}><td>{r.spec}</td><td>{r.thickness}</td><td>{r.totalPipes}본</td><td>{r.totalWaste.toLocaleString()}</td></tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colSpan={2}>합 계</td>
+                    <td>{results.reduce((a, r) => a + r.totalPipes, 0)}본</td>
+                    <td>{results.reduce((a, r) => a + r.totalWaste, 0).toLocaleString()}</td>
+                  </tr>
+                </tfoot>
+              </table>
+
               <div className="print-section-title">원본 배치 상세</div>
               {results.map((r, ri) => (
                 <div key={ri} className="print-detail-block">
@@ -1083,7 +1100,7 @@ export default function App() {
             </div>
 
             <div className="print-footer">
-              각파이프 자재 소요량 계산기 · Best-Fit Decreasing 알고리즘
+              각파이프 자재 소요량 계산기 · 주식회사 상상
             </div>
           </>
         )}
