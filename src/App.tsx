@@ -942,20 +942,23 @@ export default function App() {
               const pipesMap: Record<string, number> = {};
               for (const r of results) pipesMap[r.spec] = (pipesMap[r.spec] ?? 0) + r.totalPipes;
 
-              const cutQtyMap: Record<string, { spec: string; thickness: string; qty: number }[]> = {};
-              for (const item of items) {
-                if (!cutQtyMap[item.spec]) cutQtyMap[item.spec] = [];
-                const ex = cutQtyMap[item.spec].find(e => e.thickness === item.thickness);
-                if (ex) ex.qty += item.qty;
-                else cutQtyMap[item.spec].push({ spec: item.spec, thickness: item.thickness, qty: item.qty });
+              const cutCountByKey: Record<string, number> = {};
+              for (const r of results) {
+                const k = `${r.spec}-${r.thickness}`;
+                cutCountByKey[k] = r.bins.reduce((s, bin) => {
+                  const used = bin.reduce((a, b) => a + b, 0);
+                  const kerfTotal = bin.length > 1 ? (bin.length - 1) * kerf : 0;
+                  const waste = PIPE_LENGTH - used - kerfTotal;
+                  return s + bin.length - (waste === 0 ? 1 : 0);
+                }, 0);
               }
 
               return (
                 <div className="border-t border-gray-700 px-5 py-5 space-y-3">
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">규격별 최종 집계</p>
                   {Object.keys(pipesMap).map(spec => {
-                    const cutRows = cutQtyMap[spec] ?? [];
-                    const totalCuts = cutRows.reduce((a, r) => a + r.qty, 0);
+                    const specResults = results.filter(r => r.spec === spec);
+                    const totalCuts = specResults.reduce((a, r) => a + (cutCountByKey[`${r.spec}-${r.thickness}`] ?? 0), 0);
                     return (
                       <div key={spec} className="bg-gray-700/30 rounded-2xl border border-gray-700/60 overflow-hidden">
                         <div className="flex items-center justify-between px-4 py-3 bg-gray-700/50 border-b border-gray-700/50">
@@ -967,10 +970,10 @@ export default function App() {
                           </span>
                         </div>
                         <div className="px-4 py-2.5 flex flex-wrap gap-x-5 gap-y-1.5">
-                          {cutRows.map(row => (
-                            <span key={row.thickness} className="text-sm text-gray-400">
-                              <span className="text-gray-300 font-semibold">{row.thickness}</span>&nbsp;재단&nbsp;
-                              <span className="text-gray-200 font-bold">{row.qty}번</span>
+                          {specResults.map(r => (
+                            <span key={r.thickness} className="text-sm text-gray-400">
+                              <span className="text-gray-300 font-semibold">{r.thickness}</span>&nbsp;재단&nbsp;
+                              <span className="text-gray-200 font-bold">{cutCountByKey[`${r.spec}-${r.thickness}`] ?? 0}번</span>
                             </span>
                           ))}
                           <span className="text-sm text-gray-600 ml-auto">합계 재단&nbsp;<span className="text-gray-400 font-bold">{totalCuts}번</span></span>
