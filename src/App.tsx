@@ -1003,11 +1003,17 @@ export default function App() {
 
               <div className="print-section-title">최종 소요 본수 요약</div>
               {(() => {
-                const cutQty: Record<string, number> = {};
-                for (const item of items) {
-                  const k = `${item.spec}-${item.thickness}`;
-                  cutQty[k] = (cutQty[k] ?? 0) + item.qty;
+                const cutCount: Record<string, number> = {};
+                for (const r of results) {
+                  const k = `${r.spec}-${r.thickness}`;
+                  cutCount[k] = r.bins.reduce((s, bin) => {
+                    const used = bin.reduce((a, b) => a + b, 0);
+                    const kerfTotal = bin.length > 1 ? (bin.length - 1) * kerf : 0;
+                    const waste = PIPE_LENGTH - used - kerfTotal;
+                    return s + bin.length - (waste === 0 ? 1 : 0);
+                  }, 0);
                 }
+                const totalCuts = Object.values(cutCount).reduce((a, b) => a + b, 0);
                 return (
                   <table className="print-table">
                     <thead><tr><th>규격</th><th>두께</th><th>필요 원본 (본)</th><th>자투리 합계 (mm)</th><th>재단수량 합계</th></tr></thead>
@@ -1017,7 +1023,7 @@ export default function App() {
                           <td>{r.spec}</td><td>{r.thickness}</td>
                           <td>{r.totalPipes}본</td>
                           <td>{r.totalWaste.toLocaleString()}</td>
-                          <td>{(cutQty[`${r.spec}-${r.thickness}`] ?? 0).toLocaleString()}개</td>
+                          <td>{(cutCount[`${r.spec}-${r.thickness}`] ?? 0).toLocaleString()}번</td>
                         </tr>
                       ))}
                     </tbody>
@@ -1026,7 +1032,7 @@ export default function App() {
                         <td colSpan={2}>합 계</td>
                         <td>{results.reduce((a, r) => a + r.totalPipes, 0)}본</td>
                         <td>{results.reduce((a, r) => a + r.totalWaste, 0).toLocaleString()}</td>
-                        <td>{items.reduce((a, it) => a + it.qty, 0).toLocaleString()}개</td>
+                        <td>{totalCuts.toLocaleString()}번</td>
                       </tr>
                     </tfoot>
                   </table>
@@ -1048,11 +1054,17 @@ export default function App() {
 
               <div className="print-section-title">최종 소요 본수 요약</div>
               {(() => {
-                const cutQty: Record<string, number> = {};
-                for (const item of items) {
-                  const k = `${item.spec}-${item.thickness}`;
-                  cutQty[k] = (cutQty[k] ?? 0) + item.qty;
+                const cutCount: Record<string, number> = {};
+                for (const r of results) {
+                  const k = `${r.spec}-${r.thickness}`;
+                  cutCount[k] = r.bins.reduce((s, bin) => {
+                    const used = bin.reduce((a, b) => a + b, 0);
+                    const kerfTotal = bin.length > 1 ? (bin.length - 1) * kerf : 0;
+                    const waste = PIPE_LENGTH - used - kerfTotal;
+                    return s + bin.length - (waste === 0 ? 1 : 0);
+                  }, 0);
                 }
+                const totalCuts = Object.values(cutCount).reduce((a, b) => a + b, 0);
                 return (
                   <table className="print-table">
                     <thead><tr><th>규격</th><th>두께</th><th>필요 원본 (본)</th><th>자투리 합계 (mm)</th><th>재단수량 합계</th></tr></thead>
@@ -1062,7 +1074,7 @@ export default function App() {
                           <td>{r.spec}</td><td>{r.thickness}</td>
                           <td>{r.totalPipes}본</td>
                           <td>{r.totalWaste.toLocaleString()}</td>
-                          <td>{(cutQty[`${r.spec}-${r.thickness}`] ?? 0).toLocaleString()}개</td>
+                          <td>{(cutCount[`${r.spec}-${r.thickness}`] ?? 0).toLocaleString()}번</td>
                         </tr>
                       ))}
                     </tbody>
@@ -1071,7 +1083,7 @@ export default function App() {
                         <td colSpan={2}>합 계</td>
                         <td>{results.reduce((a, r) => a + r.totalPipes, 0)}본</td>
                         <td>{results.reduce((a, r) => a + r.totalWaste, 0).toLocaleString()}</td>
-                        <td>{items.reduce((a, it) => a + it.qty, 0).toLocaleString()}개</td>
+                        <td>{totalCuts.toLocaleString()}번</td>
                       </tr>
                     </tfoot>
                   </table>
