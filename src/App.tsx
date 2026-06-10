@@ -3,6 +3,7 @@ import {
   Minus, Plus, Trash2, Package, Scissors,
   BarChart3, ClipboardList, Printer, RotateCcw, ChevronUp, ChevronDown,
 } from 'lucide-react';
+import JointCalculator from './components/joint/JointCalculator';
 
 const PIPE_LENGTH = 6000;
 const DEFAULT_KERF = 0;
@@ -344,6 +345,7 @@ void THICKNESSES; // suppress unused warning
 // ── 컴포넌트 ──────────────────────────────────────────────
 
 export default function App() {
+  const [activeApp, setActiveApp] = useState<'pipe' | 'joint'>('pipe');
   const [reportExpanded,   setReportExpanded]   = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [bulkText,         setBulkText]         = useState('');
@@ -459,8 +461,49 @@ export default function App() {
 
   // ── JSX ────────────────────────────────────────────────
 
+  if (activeApp === 'joint') {
+    return (
+      <>
+        {/* 전역 탭 네비 */}
+        <nav className="no-print bg-gray-950 border-b border-gray-800 flex">
+          <button
+            type="button"
+            onClick={() => setActiveApp('pipe')}
+            className="px-5 py-2.5 text-xs font-semibold text-gray-400 hover:text-white hover:bg-gray-800 transition-colors border-r border-gray-800"
+          >
+            ← 각파이프 재단 계산기
+          </button>
+          <button
+            type="button"
+            className="px-5 py-2.5 text-xs font-bold text-emerald-400 bg-emerald-500/10 border-b-2 border-emerald-500"
+          >
+            사각조인트 부속 산출
+          </button>
+        </nav>
+        <JointCalculator />
+      </>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 print:bg-white print:text-black print:min-h-0" translate="no">
+
+      {/* 전역 탭 네비 */}
+      <nav className="no-print bg-gray-950 border-b border-gray-800 flex">
+        <button
+          type="button"
+          className="px-5 py-2.5 text-xs font-bold text-blue-400 bg-blue-500/10 border-b-2 border-blue-500"
+        >
+          각파이프 재단 계산기
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveApp('joint')}
+          className="px-5 py-2.5 text-xs font-semibold text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
+        >
+          사각조인트 부속 산출 →
+        </button>
+      </nav>
 
       {/* 초기화 확인 모달 */}
       {showResetConfirm && (
