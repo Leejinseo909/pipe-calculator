@@ -1083,7 +1083,7 @@ export default function App() {
                   <table className="print-detail-table">
                     <thead>
                       <tr>
-                        <th style={{ width: '9%' }}>원본 번호</th>
+                        <th style={{ width: '12%', whiteSpace: 'nowrap' }}>원본 번호</th>
                         <th>재단 구성 (mm)</th>
                         <th style={{ width: '11%' }}>사용률</th>
                         <th style={{ width: '14%' }}>자투리 (mm)</th>
