@@ -350,7 +350,7 @@ export default function App() {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [bulkText,         setBulkText]         = useState('');
   const [bulkErrors,       setBulkErrors]       = useState<ParseError[]>([]);
-  const [qtyWarningModal,  setQtyWarningModal]  = useState<{ warnings: BulkWarning[]; rows: ParsedRow[] } | null>(null);
+  const [qtyWarningModal,  setQtyWarningModal]  = useState<{ warnings: BulkWarning[]; rows: ParsedRow[]; replace: boolean } | null>(null);
   const [items,   setItems]   = useState<CutItem[]>(loadItems);
   const [results, setResults] = useState<GroupResult[] | null>(loadResults);
   const [kerf,       setKerf]       = useState(DEFAULT_KERF);
@@ -383,9 +383,11 @@ export default function App() {
     setItems(p => p.filter(i => i.id !== id));
   }, []);
 
-  const commitBulkRows = useCallback((rows: ParsedRow[]) => {
+  const commitBulkRows = useCallback((rows: ParsedRow[], replace = false) => {
     setItems(prev => {
-      const merged = [...prev, ...rows.map(r => ({ id: crypto.randomUUID(), ...r }))];
+      const merged = replace
+        ? rows.map(r => ({ id: crypto.randomUUID(), ...r }))
+        : [...prev, ...rows.map(r => ({ id: crypto.randomUUID(), ...r }))];
       setResults(calculateResults(merged, kerf));
       return merged;
     });
@@ -400,8 +402,18 @@ export default function App() {
     setBulkErrors(errors);
     if (errors.length > 0) return;
     if (rows.length === 0) return;
-    if (warnings.length > 0) { setQtyWarningModal({ warnings, rows }); return; }
+    if (warnings.length > 0) { setQtyWarningModal({ warnings, rows, replace: false }); return; }
     commitBulkRows(rows);
+  }, [bulkText, commitBulkRows]);
+
+  const handleFreshCalc = useCallback(() => {
+    if (!bulkText.trim()) return;
+    const { rows, errors, warnings } = parseBulkText(bulkText);
+    setBulkErrors(errors);
+    if (errors.length > 0) return;
+    if (rows.length === 0) return;
+    if (warnings.length > 0) { setQtyWarningModal({ warnings, rows, replace: true }); return; }
+    commitBulkRows(rows, true);
   }, [bulkText, commitBulkRows]);
 
   const handleFullReset = useCallback(() => setShowResetConfirm(true), []);
@@ -541,7 +553,7 @@ export default function App() {
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
           onKeyDown={e => {
-            if (e.key === 'Enter') { const r = qtyWarningModal.rows; setQtyWarningModal(null); commitBulkRows(r); }
+            if (e.key === 'Enter') { const r = qtyWarningModal.rows; const repl = qtyWarningModal.replace; setQtyWarningModal(null); commitBulkRows(r, repl); }
             else if (e.key === 'Escape') setQtyWarningModal(null);
           }}
         >
@@ -571,7 +583,7 @@ export default function App() {
                 아니오, 수정할게요
               </button>
               <button ref={qtyConfirmBtnRef}
-                onClick={() => { const r = qtyWarningModal.rows; setQtyWarningModal(null); commitBulkRows(r); }}
+                onClick={() => { const r = qtyWarningModal.rows; const repl = qtyWarningModal.replace; setQtyWarningModal(null); commitBulkRows(r, repl); }}
                 className="flex-1 bg-yellow-500 hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-300 text-gray-900 font-bold py-2.5 rounded-xl transition-colors text-sm">
                 네, 맞습니다
               </button>
@@ -657,11 +669,20 @@ export default function App() {
                 ))}
               </div>
             )}
-            <button onClick={handleBulkAdd} disabled={!bulkText.trim()}
-              className="w-full bg-blue-600 hover:bg-blue-500 active:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-base py-3.5 rounded-xl transition-all duration-150 flex items-center justify-center gap-2 shadow-lg shadow-blue-900/30">
-              <ClipboardList className="w-5 h-5" />
-              계산하기
-            </button>
+            <div className="flex gap-2">
+              <button onClick={handleFreshCalc} disabled={!bulkText.trim()}
+                className="flex-1 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-base py-3.5 rounded-xl transition-all duration-150 flex items-center justify-center gap-2 shadow-lg shadow-blue-900/30">
+                <ClipboardList className="w-5 h-5" />
+                새로 계산
+              </button>
+              {items.length > 0 && (
+                <button onClick={handleBulkAdd} disabled={!bulkText.trim()}
+                  className="flex-1 bg-gray-600 hover:bg-gray-500 active:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-base py-3.5 rounded-xl transition-all duration-150 flex items-center justify-center gap-2">
+                  <Plus className="w-5 h-5" />
+                  추가하기
+                </button>
+              )}
+            </div>
           </div>
         </section>
 
