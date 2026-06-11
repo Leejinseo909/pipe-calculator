@@ -7,12 +7,13 @@ const EPAD   = 740;   // 입면도 여백 (뱃지 공간 확보)
 
 // 부품별 색상
 const PIPE_CLR = '#94a3b8'; // 통일된 파이프 색상 (은회색)
+const PIPE_BDR = '#64748b'; // 파이프 테두리 (slate-500)
 
 const C = {
-  col:    '#f1f5f9',  // 주기둥 (흰색)
-  colEdg: '#fed7aa',  // 외곽중간기둥
-  colCtr: '#e9d5ff',  // 중앙기둥
-  rcol:   PIPE_CLR,   // 난간 중간기둥 (파이프)
+  col:    PIPE_CLR,   // 주기둥
+  colEdg: PIPE_CLR,   // 외곽중간기둥
+  colCtr: PIPE_CLR,   // 중앙기둥
+  rcol:   PIPE_CLR,   // 난간 중간기둥
   panel:  PIPE_CLR,   // 바닥판 파이프
   cross:  '#f97316',  // 교차TEE (주황)
   fix:    '#22c55e',  // 고정피스TEE (초록)
@@ -114,7 +115,7 @@ function Dot({ x, y, r, fill, n }) {
 
 // 기둥 사각형 (번호 포함)
 function ColRect({ x, y, s, fill, border, n }) {
-  const textFill = fill === C.col ? '#1a1a1a' : '#111';
+  const textFill = '#111827';
   return (
     <g>
       <rect x={x - s / 2} y={y - s / 2} width={s} height={s}
@@ -241,7 +242,7 @@ function PlanView({ width, depth, colXs, colYs, panelXs, railFaces, pm, pipeSize
           const t = colType(c, r);
           const id   = t === 'corner' ? ids.L  : t === 'edge' ? ids.S3 : ids.SC;
           const fill = t === 'corner' ? C.col  : t === 'edge' ? C.colEdg : C.colCtr;
-          const bdr  = t === 'corner' ? '#9ca3af' : t === 'edge' ? '#f97316' : '#8b5cf6';
+          const bdr  = PIPE_BDR;
           return <ColRect key={`col${c}-${r}`} x={x} y={y} s={S} fill={fill} border={bdr} n={once(id)} />;
         })
       )}
@@ -343,7 +344,7 @@ function ElevView({ svgTitle, spanLen, spanXs, floorH, totalH, hasRail, pm, pipe
       {/* 주기둥 */}
       {spanXs.map((x, i) => {
         const fill = (i === 0 || i === n - 1) ? C.col : C.colEdg;
-        const bdr  = (i === 0 || i === n - 1) ? '#9ca3af' : '#f97316';
+        const bdr  = PIPE_BDR;
         return (
           <g key={i}>
             <rect x={x - CW / 2} y={top} width={CW} height={Ygnd - top}
