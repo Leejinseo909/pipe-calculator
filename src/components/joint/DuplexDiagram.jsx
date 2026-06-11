@@ -174,9 +174,6 @@ function PlanView({ width, depth, colXs, colYs, panelXs, railFaces, pm, pipeSize
   }, [railFaces, colXs, colYs, depth, width]);
 
   const S = pipePx.sq; // 기둥 사각형 크기 (규격별 통일)
-  // 파이프 선 두께를 viewBox 크기에 비례시켜 모든 뷰에서 동일하게 표시
-  const vbW = width + PAD * 2;
-  const psw = n => Math.round(n * vbW / 7000); // 기준 6m 구조물 viewBox폭 7000
 
   return (
     <svg viewBox={`${-PAD} ${-PAD} ${width + PAD * 2} ${depth + PAD * 2}`}
@@ -188,16 +185,16 @@ function PlanView({ width, depth, colXs, colYs, panelXs, railFaces, pm, pipeSize
 
       {/* 구조보 그리드 (3m 간격) */}
       {colYs.map((y, r) =>
-        <line key={`gh${r}`} x1={0} y1={y} x2={width} y2={y} stroke={C.beam} strokeWidth={psw(50)} />
+        <line key={`gh${r}`} x1={0} y1={y} x2={width} y2={y} stroke={C.beam} strokeWidth={4} vectorEffect="non-scaling-stroke" />
       )}
       {colXs.map((x, c) =>
-        <line key={`gv${c}`} x1={x} y1={0} x2={x} y2={depth} stroke={C.beam} strokeWidth={psw(50)} />
+        <line key={`gv${c}`} x1={x} y1={0} x2={x} y2={depth} stroke={C.beam} strokeWidth={4} vectorEffect="non-scaling-stroke" />
       )}
 
       {/* 바닥판 파이프 (하늘색) */}
       {panelXs.map((x, p) =>
         <line key={`fp${p}`} x1={x} y1={0} x2={x} y2={depth}
-          stroke={C.panel} strokeWidth={psw(30)} opacity={.75} />
+          stroke={C.panel} strokeWidth={4} vectorEffect="non-scaling-stroke" opacity={.75} />
       )}
 
       {/* 교차TEE — 주황 원 (패널 × 구조보 교차점) */}
@@ -233,7 +230,7 @@ function PlanView({ width, depth, colXs, colYs, panelXs, railFaces, pm, pipeSize
         <rect key={i}
           x={pt.x - RAIL_PX.sq / 2} y={pt.y - RAIL_PX.sq / 2}
           width={RAIL_PX.sq} height={RAIL_PX.sq}
-          fill={C.rcol} stroke={C.rail} strokeWidth={10} rx={6} />
+          fill={C.rcol} stroke={C.rail} strokeWidth={1.5} vectorEffect="non-scaling-stroke" rx={6} />
       ))}
 
       {/* 주기둥 사각형 (흰색) + 번호 */}
@@ -303,29 +300,29 @@ function ElevView({ svgTitle, spanLen, spanXs, floorH, totalH, hasRail, pm, pipe
       <rect x={-EPAD} y={-EPAD} width={spanLen + EPAD * 2} height={totalH + EPAD * 2} fill="#0d1117" />
 
       {/* 지면 */}
-      <line x1={-80} y1={Ygnd} x2={spanLen + 80} y2={Ygnd} stroke={C.gnd} strokeWidth={sw(80)} opacity={.55} />
-      <line x1={-80} y1={Ygnd + 55} x2={spanLen + 80} y2={Ygnd + 55} stroke={C.gnd} strokeWidth={sw(24)} opacity={.25} />
+      <line x1={-80} y1={Ygnd} x2={spanLen + 80} y2={Ygnd} stroke={C.gnd} strokeWidth={5} vectorEffect="non-scaling-stroke" opacity={.55} />
+      <line x1={-80} y1={Ygnd + 55} x2={spanLen + 80} y2={Ygnd + 55} stroke={C.gnd} strokeWidth={1.5} vectorEffect="non-scaling-stroke" opacity={.25} />
 
       {/* 상단 가로보 — 기둥 상단 연결 */}
       <line x1={spanXs[0]} y1={top} x2={spanXs[n - 1]} y2={top}
-        stroke={C.beam} strokeWidth={sw(64)} strokeLinecap="round" />
+        stroke={C.beam} strokeWidth={4} vectorEffect="non-scaling-stroke" strokeLinecap="round" />
 
       {/* 중간 가로보 — 바닥판 레벨 (난간 있을 때만) */}
       {hasRail && Yfl > top && (
         <line x1={spanXs[0]} y1={Yfl} x2={spanXs[n - 1]} y2={Yfl}
-          stroke={C.beam} strokeWidth={sw(56)} strokeLinecap="round" />
+          stroke={C.beam} strokeWidth={4} vectorEffect="non-scaling-stroke" strokeLinecap="round" />
       )}
 
       {/* 바닥판 레벨 점선 표시 */}
       {hasRail && (
         <line x1={0} y1={Yfl} x2={spanLen} y2={Yfl}
-          stroke="#fbbf24" strokeWidth={sw(28)} strokeDasharray={`${sw(90)} ${sw(45)}`} opacity={.35} />
+          stroke="#fbbf24" strokeWidth={2} vectorEffect="non-scaling-stroke" strokeDasharray="15 8" opacity={.35} />
       )}
 
       {/* 난간 살대 3줄 */}
       {hasRail && [400, 800, 1200].map(h => (
         <line key={h} x1={0} y1={Yfl - h} x2={spanLen} y2={Yfl - h}
-          stroke={C.rail} strokeWidth={sw(24)} opacity={.38} />
+          stroke={C.rail} strokeWidth={2} vectorEffect="non-scaling-stroke" opacity={.38} />
       ))}
 
       {/* 난간 중간기둥 (mid-span) */}
@@ -334,7 +331,7 @@ function ElevView({ svgTitle, spanLen, spanXs, floorH, totalH, hasRail, pm, pipe
         return (
           <g key={i}>
             <line x1={mx} y1={Yfl - RAIL_H} x2={mx} y2={Yfl}
-              stroke={C.rcol} strokeWidth={sw(RAIL_PX.cw * 2)} opacity={.6} />
+              stroke={C.rcol} strokeWidth={5} vectorEffect="non-scaling-stroke" opacity={.6} />
             <rect x={mx - sw(RAIL_PX.cw * 1.4)} y={Yfl - RAIL_H - sw(60)} width={sw(RAIL_PX.cw * 2.8)} height={sw(60)}
               fill={C.capS} rx={4} />
           </g>
@@ -348,7 +345,7 @@ function ElevView({ svgTitle, spanLen, spanXs, floorH, totalH, hasRail, pm, pipe
         return (
           <g key={i}>
             <rect x={x - CW / 2} y={top} width={CW} height={Ygnd - top}
-              fill={fill} stroke={bdr} strokeWidth={10} opacity={.8} rx={6} />
+              fill={fill} stroke={bdr} strokeWidth={1.5} vectorEffect="non-scaling-stroke" opacity={.8} rx={6} />
             {hasRail && (
               <rect x={x - CW * .7} y={top - sw(60)} width={CW * 1.4} height={sw(60)}
                 fill={C.capM} rx={4} />
