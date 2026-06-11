@@ -6,20 +6,22 @@ const PAD    = 500;   // 평면도 여백
 const EPAD   = 740;   // 입면도 여백 (뱃지 공간 확보)
 
 // 부품별 색상
+const PIPE_CLR = '#94a3b8'; // 통일된 파이프 색상 (은회색)
+
 const C = {
   col:    '#f1f5f9',  // 주기둥 (흰색)
   colEdg: '#fed7aa',  // 외곽중간기둥
   colCtr: '#e9d5ff',  // 중앙기둥
-  rcol:   '#fbbf24',  // 난간 중간기둥 (50각)
-  panel:  '#38bdf8',  // 바닥판 파이프 (하늘색)
+  rcol:   PIPE_CLR,   // 난간 중간기둥 (파이프)
+  panel:  PIPE_CLR,   // 바닥판 파이프
   cross:  '#f97316',  // 교차TEE (주황)
   fix:    '#22c55e',  // 고정피스TEE (초록)
   plate:  '#ca8a04',  // 플레이트
   anchor: '#9ca3af',  // 셋앙카
   capM:   '#a78bfa',  // 사각캡(주기둥)
   capS:   '#c4b5fd',  // 사각캡(50각)
-  beam:   '#2d3748',  // 구조보 그리드
-  rail:   '#ea580c',  // 난간
+  beam:   PIPE_CLR,   // 구조보 그리드
+  rail:   PIPE_CLR,   // 난간
   dim:    '#4b5563',  // 치수선
   dimT:   '#94a3b8',  // 치수 글자
   gnd:    '#92400e',  // 지면
