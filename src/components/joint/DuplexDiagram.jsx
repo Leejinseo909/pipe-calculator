@@ -197,7 +197,7 @@ function PlanView({ width, depth, colXs, colYs, panelXs, railFaces, pm, pipeSize
       {/* 바닥판 파이프 (하늘색) */}
       {panelXs.map((x, p) =>
         <line key={`fp${p}`} x1={x} y1={0} x2={x} y2={depth}
-          stroke={C.panel} strokeWidth={4} vectorEffect="non-scaling-stroke" opacity={.75} />
+          stroke={C.panel} strokeWidth={4} vectorEffect="non-scaling-stroke" />
       )}
 
       {/* 교차TEE — 주황 원 (패널 × 구조보 교차점) */}
