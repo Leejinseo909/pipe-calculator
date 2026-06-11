@@ -27,6 +27,14 @@ const C = {
 
 const fmt = v => v >= 1000 ? `${v / 1000}m` : `${v}mm`;
 
+// 파이프 규격별 SVG 픽셀 크기 (두께별 통일 표현)
+const PIPE_PX = {
+  '50':  { sq: 160, cw: 50  },
+  '75':  { sq: 210, cw: 75  },
+  '100': { sq: 260, cw: 100 },
+};
+const RAIL_PX = { sq: 110, cw: 50 }; // 난간 중간기둥 (항상 50각)
+
 // 범례 색상/모양 반환
 function legendStyle(id) {
   if (id.startsWith('L형') || id.startsWith('삼방TEE') || id.startsWith('십자TEE'))
@@ -119,7 +127,7 @@ function ColRect({ x, y, s, fill, border, n }) {
 
 // ── 평면도 ─────────────────────────────────────────────────────
 
-function PlanView({ width, depth, colXs, colYs, panelXs, railFaces, pm, pipeSize }) {
+function PlanView({ width, depth, colXs, colYs, panelXs, railFaces, pm, pipeSize, pipePx }) {
   const cols = colXs.length, rows = colYs.length;
   const colType = (c, r) =>
     (c === 0 || c === cols - 1) && (r === 0 || r === rows - 1) ? 'corner'
@@ -165,7 +173,7 @@ function PlanView({ width, depth, colXs, colYs, panelXs, railFaces, pm, pipeSize
     return pts;
   }, [railFaces, colXs, colYs, depth, width]);
 
-  const S = 165; // 기둥 사각형 크기
+  const S = pipePx.sq; // 기둥 사각형 크기 (규격별 통일)
 
   return (
     <svg viewBox={`${-PAD} ${-PAD} ${width + PAD * 2} ${depth + PAD * 2}`}
@@ -219,7 +227,9 @@ function PlanView({ width, depth, colXs, colYs, panelXs, railFaces, pm, pipeSize
 
       {/* 난간 중간기둥 (50각, 노란 사각형) */}
       {railMids.map((pt, i) => (
-        <rect key={i} x={pt.x - 55} y={pt.y - 55} width={110} height={110}
+        <rect key={i}
+          x={pt.x - RAIL_PX.sq / 2} y={pt.y - RAIL_PX.sq / 2}
+          width={RAIL_PX.sq} height={RAIL_PX.sq}
           fill={C.rcol} stroke={C.rail} strokeWidth={10} rx={6} />
       ))}
 
@@ -241,9 +251,12 @@ function PlanView({ width, depth, colXs, colYs, panelXs, railFaces, pm, pipeSize
       <DV x={width + PAD * .62} x0={width} y1={0} y2={depth} label={fmt(depth)} />
       {cols > 1 && <DH x1={0} x2={colXs[1]} y={depth + PAD * .44} y0={depth} label="3m" below />}
 
-      {/* 뷰 제목 */}
+      {/* 뷰 제목 + 규격 */}
       <text x={-PAD * .88} y={-PAD * .88} fill={C.dimT} fontSize={108} fontWeight="bold" fontFamily="sans-serif">
         평면도
+      </text>
+      <text x={-PAD * .88} y={-PAD * .52} fill={C.dimT} fontSize={72} fontFamily="monospace">
+        주기둥 {pipeSize}×{pipeSize}mm{Object.values(railFaces).some(Boolean) ? ` / 난간기둥 50×50mm` : ''}
       </text>
     </svg>
   );
@@ -251,11 +264,11 @@ function PlanView({ width, depth, colXs, colYs, panelXs, railFaces, pm, pipeSize
 
 // ── 입면도 (정면/측면) ─────────────────────────────────────────
 
-function ElevView({ svgTitle, spanLen, spanXs, floorH, totalH, hasRail, pm, pipeSize }) {
+function ElevView({ svgTitle, spanLen, spanXs, floorH, totalH, hasRail, pm, pipeSize, pipePx }) {
   const Yfl  = totalH - floorH;  // 바닥판 레벨 (SVG Y: 0=상단, totalH=지면)
   const Ygnd = totalH;
   const n    = spanXs.length;
-  const CW   = 48; // 기둥 사각형 폭
+  const CW   = pipePx.cw; // 기둥 폭 (규격별 통일)
 
   const ids = {
     L:   `L형_${pipeSize}`,
@@ -315,8 +328,8 @@ function ElevView({ svgTitle, spanLen, spanXs, floorH, totalH, hasRail, pm, pipe
         return (
           <g key={i}>
             <line x1={mx} y1={Yfl - RAIL_H} x2={mx} y2={Yfl}
-              stroke={C.rcol} strokeWidth={22} opacity={.6} />
-            <rect x={mx - 36} y={Yfl - RAIL_H - 36} width={72} height={36}
+              stroke={C.rcol} strokeWidth={RAIL_PX.cw} opacity={.6} />
+            <rect x={mx - RAIL_PX.cw * .7} y={Yfl - RAIL_H - 30} width={RAIL_PX.cw * 1.4} height={30}
               fill={C.capS} rx={4} />
           </g>
         );
@@ -381,9 +394,12 @@ function ElevView({ svgTitle, spanLen, spanXs, floorH, totalH, hasRail, pm, pipe
       )}
       {n > 1 && <DH x1={spanXs[0]} x2={spanXs[1]} y={Ygnd + EPAD * .42} y0={Ygnd} label="3m" below />}
 
-      {/* 뷰 제목 */}
+      {/* 뷰 제목 + 규격 */}
       <text x={-EPAD * .88} y={-EPAD * .88} fill={C.dimT} fontSize={105} fontWeight="bold" fontFamily="sans-serif">
         {svgTitle}
+      </text>
+      <text x={-EPAD * .88} y={-EPAD * .56} fill={C.dimT} fontSize={72} fontFamily="monospace">
+        주기둥 {pipeSize}×{pipeSize}mm{hasRail ? ` / 난간기둥 50×50mm` : ''}
       </text>
     </svg>
   );
@@ -464,6 +480,8 @@ export default function DuplexDiagram({ dims, pipeSize, options, results }) {
     return Object.fromEntries(results.map((r, i) => [r.id, i + 1]));
   }, [results]);
 
+  const pipePx = PIPE_PX[pipeSize] ?? PIPE_PX['50'];
+
   if (!Array.isArray(results) || results.length === 0) return null;
 
   return (
@@ -478,7 +496,7 @@ export default function DuplexDiagram({ dims, pipeSize, options, results }) {
             <PlanView
               width={width} depth={depth}
               colXs={colXs} colYs={colYs} panelXs={panelXs}
-              railFaces={railFaces} pm={pm} pipeSize={pipeSize}
+              railFaces={railFaces} pm={pm} pipeSize={pipeSize} pipePx={pipePx}
             />
           </div>
           <div className="w-44 shrink-0">
@@ -497,7 +515,7 @@ export default function DuplexDiagram({ dims, pipeSize, options, results }) {
               spanLen={width} spanXs={colXs}
               floorH={floorH} totalH={totalH}
               hasRail={railFaces.front}
-              pm={pm} pipeSize={pipeSize}
+              pm={pm} pipeSize={pipeSize} pipePx={pipePx}
             />
           </div>
         </div>
@@ -509,7 +527,7 @@ export default function DuplexDiagram({ dims, pipeSize, options, results }) {
               spanLen={depth} spanXs={colYs}
               floorH={floorH} totalH={totalH}
               hasRail={railFaces.left || railFaces.right}
-              pm={pm} pipeSize={pipeSize}
+              pm={pm} pipeSize={pipeSize} pipePx={pipePx}
             />
           </div>
         </div>
